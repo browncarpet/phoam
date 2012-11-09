@@ -1,0 +1,138 @@
+body { 
+	background-color:#000;
+	background-image:url(http://www.myrocontrol.com/images/bg2.jpg);
+	background-repeat:repeat no-repeat;
+	color:#FFFFFF;
+	font-family:'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Verdana, Arial, sans-serif;
+	padding-left: 20px;
+ }
+
+#HVAC01, #HVAC02, #HVAC03
+{ 
+	box-shadow: 0 2px 7px rgba(0, 0, 0, .4); border-radius: 25px; background-color: rgba(66,66,66,0.5);
+	background-image: -webkit-gradient(linear, 0% 100%, 0% 0%, from(rgba(66, 66, 66, .8)), to(rgba(200, 200, 200, .3)));margin-right:50px;
+}
+
+#HVAC02 {display:none !important;}
+
+dl.hvacStyle
+{
+	border: 3px solid #000;
+	background-color: #ddd;
+	text-align: center;
+	padding: 0 0 10px 0;
+	float: left;
+	margin-right: 1em;
+	overflow:hidden;
+	width:250px;
+	display:none;
+}
+
+.hvacStyle dt 
+{ 	
+	font-weight: bold;
+	background-color: #131210;
+	color: #ddd;
+	padding: 5px 10px;
+	margin-bottom: 10px;
+	font-size: 30px;
+}
+
+.hvacStyle dd
+{
+	margin: 0;
+	padding: 0 10px 5px 10px;
+	font-weight:bolder; 
+	color: white; 
+	text-shadow: 0 2px 2px rgba(0,0,0,0.3);
+	display:inline;
+}
+
+dd.temp
+{font-size: 56px; line-height: 70px;}
+
+dd.maxt, .maxt
+{color: rgba(255,50,50,1);}
+
+dd.mint, .mint
+{color: rgba(50,50,255,1);}
+
+dd.mint, dd.maxt, dd.range
+{
+	display: block;
+	font-size: 40px;
+	text-shadow: 0 2px 2px rgba(0,0,0,0.3);
+	//text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+}
+
+dd.mint button, dd.maxt button
+{
+	-webkit-border-radius:10px;
+	border: solid 2px #ddd;
+	font-size: 25px;
+	vertical-align: middle;
+	background-color: #333;
+	color:#fff;
+	box-shadow: 0 2px 7px rgba(0, 0, 0, .4);
+	width: 30px;
+	height: 30px;
+	line-height: 15px; 
+}
+
+.range span {margin: 20px;}
+
+dd.mode button
+{
+	
+	-webkit-border-radius:10px;
+	border: solid 0px #ddd;
+	font-size: 20px;
+	vertical-align: middle;
+	background-color: #333;
+	color:#fff;
+	//box-shadow: 0 2px 7px rgba(0, 0, 0, .4);
+	box-shadow: 0 0 0 2px #222, 0 0 0 4px #ccc;
+	//background-image: -webkit-gradient(linear, 0% 100%, 0% 0%, from(rgba(66, 66, 66, .8)), to(rgba(200, 200, 200, .3)));
+	width: 70px;
+	height: 30px;
+	line-height: 20px; 
+	margin: 20px 0;
+	text-transform: uppercase;
+}
+
+
+dd button:active
+{
+	background: #666;
+	
+}
+
+.setpointrange {position:absolute; height: 200px; margin: 80px 25px 0px; font-size: 14px !important;}
+.redNode {background:red !important; border: 2px solid black !important; background-image: -webkit-gradient(linear, 0% 100%, 0% 0%, from(rgba(00, 00, 00, .5)), to(rgba(200, 200, 200, .1))) !important;}
+.blueNode {background:blue !important; border: 2px solid black !important;background-image: -webkit-gradient(linear, 0% 100%, 0% 0%, from(rgba(00, 00, 0, .5)), to(rgba(200, 200, 200, .1))) !important; z-index:5 !important;}
+.ui-slider {background:#333; border: 2px solid black ;}
+.ui-slider-range {background:#aaa;}
+
+pre {display:none;}
+
+
+@font-face {
+    font-family: 'BebasNeueRegular';
+    src: url('BebasNeue-webfont.eot');
+    src: url('BebasNeue-webfont.eot?#iefix') format('embedded-opentype'),
+         url('BebasNeue-webfont.woff') format('woff'),
+         url('BebasNeue-webfont.ttf') format('truetype'),
+         url('BebasNeue-webfont.svg#BebasNeueRegular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@media only screen and (device-width: 768px) {
+
+.hvacStyle dd {margin-left:35px !important;}
+.setpointrange {margin-left: 20px;}
+dd.mint button, dd.maxt button, dd.mode button{padding: 10px 7px 10px 7px; line-height: 5px}
+
+}
+

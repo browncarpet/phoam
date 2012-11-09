@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+   <head>
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+	<script src="http://code.jquery.com/jquery-1.8.2.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+	<script src="jquery.nouislider.min.js"></script>
+	<link rel="stylesheet" media="all" href="main.css"/>
+      <script type="text/javascript">
+         var sock = null;
+         var ellog = null;
+
+         window.onload = function() {
+
+            var wsuri;
+            ellog = document.getElementById('log');
+
+            if (window.location.protocol === "file:") {
+               wsuri = "ws://localhost:9000";
+            } else {
+               wsuri = "ws://" + window.location.hostname + ":9000";
+            }
+
+            if ("WebSocket" in window) {
+               sock = new WebSocket(wsuri);
+            } else if ("MozWebSocket" in window) {
+               sock = new MozWebSocket(wsuri);
+            } else {
+               log("Browser does not support WebSocket!");
+               window.location = "http://autobahn.ws/unsupportedbrowser";
+            }
+
+            if (sock) {
+               sock.onopen = function() {
+                  log("Connected to " + wsuri);
+               }
+
+               sock.onclose = function(e) {
+                  log("Connection closed (wasClean = " + e.wasClean + ", code = " + e.code + ", reason = '" + e.reason + "')");
+                  sock = null;
+               }
+
+               sock.onmessage = function(e) {
+                  log("Got echo: " + e.data);
+				if (e.data.indexOf("buttonred") != -1) {
+					ChangeStyle('red');
+               };
+			   if (e.data.indexOf("hvac") != -1) {
+					hvacStatus(e.data);
+               };
+			   }
+				
+            }
+			$(".hvacStyle").fadeIn("slow");
+         };
+
+         function broadcast() {
+            var msg = document.getElementById('message').value;
+            if (sock) {
+               sock.send(msg);
+               log("Sent: " + msg);
+            } else {
+               log("Not connected.");
+            }
+         };
+
+         function log(m) {
+            ellog.innerHTML += m + '\n';
+            ellog.scrollTop = ellog.scrollHeight;
+         };
+		 
+	
+      </script>
+	  <script>
+		
+		
+		$(document).ready(function() {
+		
+			$(".setpointrange").slider({
+				range: true,
+				max: 85,
+				min: 60,
+				values: [ 67, 80 ],
+				animate: 'slow',
+				orientation: "vertical",
+				//Temporarily removed to remove control. need to fix some error. 20121019
+				/*stop: function(event, ui){
+					var index = $(ui.handle).siblings('a').andSelf().index(ui.handle);
+					var values = $(this).slider('values');
+					var currentID = $(this).attr("id");
+					mint = $(this).siblings().eq(0).attr('id');
+					maxt = $(this).siblings().eq(1).attr('id');
+					//if (values[1]-values[0] <=3){
+						//values[1]++;
+					//$(this).slider('values') = [ values[0], values[1] ];
+					//}
+					//alert(index == 0 || ui.value > values[index - 1]) &&
+						//(index == values.length - 1 || ui.value < values[index + 1]);
+					$( "#hvac2mint" ).html(values[0]);
+					$( "#hvac2maxt" ).html(values[1]);
+					log(mint+values[0]+","+maxt+values[1]);
+					sock.send(mint+values[0]);
+					sock.send(maxt+values[1]);
+					
+				}*/
+				
+			});
+			
+			var sliderNodeMin = $('.setpointrange').children('a').eq(0).addClass('blueNode');
+			var sliderNodeMAx = $('.setpointrange').children('a').eq(1).addClass('redNode');
+			
+			
+		});
+		
+
+		function ChangeStyle(c){
+			document.getElementById("colorbutton").style.background=c;
+		};
+		function hvacStatus(data){
+			/*&tempSplit = data.split(".");
+			hvac = tempSplit[0];
+			address = tempSplit[1];
+			method = tempSplit[2];
+			hvacData = tempSplit[3];*/
+			hvac = data.slice(0,4);
+			address = data.slice(4,6);
+			method = data.slice(6,10);
+			hvacData = data.slice(10,14);
+			targetHVAC = hvac+address+method;
+			//alert(targetHVAC);
+			//document.getElementById(targetHVAC).innerHTML=hvacData;
+			$("#"+targetHVAC).html(hvacData);
+			if(method == "mint" || method == "maxt"){
+				if (method == "mint"){
+					knob = 0;
+				} else {
+					knob = 1;
+				};
+				targetRange = "#"+hvac+address+"range";
+				//alert(targetRange+" "+knob+" "+hvacData);
+				$(targetRange).slider( "values" , knob, [hvacData] )
+				
+			};
+		};
+		
+		function changeTemp(curHVAC) {
+			//method = $(curHVAC).parents().eq(0).attr('class');
+			//device = $(curHVAC).parents().eq(0).attr('id');
+			target = $(curHVAC).siblings().eq(0).attr('id');
+			x = document.getElementById(target).innerHTML;
+			if (curHVAC.innerHTML === "+") {x++;}
+			else {x--;}
+			document.getElementById(target).innerHTML = x;
+			log(target+x)
+			sock.send(target+x);
+		};
+		function changeMode(curHVAC) {
+			var modeList = ["Auto","Off","Cool","Heat"]
+			target = $(curHVAC).attr('id');
+			data = curHVAC.innerHTML;
+			position = jQuery.inArray(data, modeList);
+			if (position <= 2) {position++;}
+			else {position = 0}
+			newMode = modeList[position];
+			curHVAC.innerHTML = newMode;
+			log(target+newMode)
+			sock.send(target+newMode);
+		};
+		
+			
+	</script>
+	
+   </head>
+   <body>
+      <h1>My Climate</h1>
+		  <div id="HVAC">
+
+			<dl id="HVAC01" class='hvacStyle'>
+				<div id="hvac01range" class="setpointrange"></div>
+				<dt id="hvac01name">Office</dt>
+					<dd id="hvac01temp" class="temp">78</dd>
+					<dd class="maxt">
+						<span id="hvac01maxt">80</span>
+						<button onclick='changeTemp(this);'>-</button>
+						<button onclick='changeTemp(this);'>+</button>
+					</dd>	
+					<dd class="mint">
+						<span id="hvac01mint">67</span>
+						<button onclick='changeTemp(this);'>-</button>
+						<button onclick='changeTemp(this);'>+</button>
+					</dd>
+					<dd class="mode">
+						<button id="hvac01mode" onclick='changeMode(this);'>Off</button>
+					</dd>
+			</dl>
+
+			
+
+			<dl id="HVAC02" class='hvacStyle'>
+				<dt id="hvac02name">Master Bed</dt>
+					<dd id="hvac02temp" class="temp">78</dd>
+					<dd class="range">
+						<span id="hvac02mint" class="mint">67</span><span id="hvac02maxt" class="maxt">80</span>
+						<div id="hvac02range" class="setpointrange"></div>
+					</dd>
+					<dd> </dd>
+					<dd class="mode">
+						<button id="hvac02mode" onclick='changeMode(this);'>Off</button>
+					</dd>
+			</dl>
+		  </div>
+	  
+      <noscript>You must enable JavaScript</noscript>
+
+	  <pre id="log" style="height: 10em; overflow-y: scroll; background-color: #aaa; width: 30%"></pre>
+   </body>
+</html>
